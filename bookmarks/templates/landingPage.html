@@ -1,0 +1,50 @@
+{% extends "base.html"%}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block Style %}
+<style>
+.spinner i{
+  display: none;
+}
+</style>
+{% endblock %}
+{% block Content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h3>Bookmark</h3>
+      <div class="col-sm-8">
+        {% block content %}
+           {% crispy form %}
+        {% endblock %}
+      </div>
+      <div class="col-sm-4">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block Script %}
+  <script type="text/javascript">
+    $('#id_Url').on('blur', function(){
+      var url = 'http://'+$('#id_Url').val();
+      console.log(url);
+      $.ajax({
+        url : "{%url 'BookmarkHome' %}",
+        type : "POST",
+        data : {
+          'url':url,
+          'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+        },
+        beforeSend : function(jqXHR) {
+    			$('.spinner i').addClass('icon-spin').toggle();
+    		},
+        success : function(data){
+          $('.spinner i').removeClass('icon-spin').toggle();
+          console.log(data.title);
+          $('#id_Title').attr('value',data.title);
+        }
+      });
+    });
+  </script>
+{% endblock %}
